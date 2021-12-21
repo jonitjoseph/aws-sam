@@ -1,0 +1,31 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  AWS SAM Application
+  ### *Add Description ###
+
+Resources:
+  Function: # *Add/Change Function Name
+    Type: AWS::Serverless::Function
+    Properties:
+      Architectures: 
+        - x86_64 # Add/Change Function Architecture
+      CodeUri: function/  # Add/Change Function Source Folder
+      FunctionName: Function  # *Add/Change Function Name
+      Handler: app.lambda_handler # Add/Change Function Handler
+      MemorySize: 128 # Add/Change Function Memory
+      Role: #arn:aws:iam::{{awsid}}:role/AWSLambdaBasic # *Add/Change IAM Role ARN
+      Runtime: python3.8  # Add/Change Function Runtime
+      Timeout: 30 # Add/Change Function Timeout in seconds
+      Events:
+        FunctionEvent:  # *Add/Change Function Event Source
+          Type: Schedule
+          Properties:
+            Enabled: true
+            Name: FunctionScheduleEvent # Add/Change Event Name
+            Schedule: rate(2 minutes) # Add/Change Event Schedule
+
+Outputs:
+  Function: # *Dependent on Resource Name Specified
+    Description: "AWS Lambda Function ARN"
+    Value: !GetAtt Function.Arn

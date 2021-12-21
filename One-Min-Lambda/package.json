@@ -1,0 +1,16 @@
+{
+    "name": "replaced-by-user-input",
+    "description": "replaced-by-user-input",
+    "version": "0.0.1",
+    "private": true,
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "local": "node -e \"console.log(require('./app').handler({}));\""
+    },
+    "author": "jonitjoseph",
+    "license": "ISC",  
+    "dependencies": {
+        "@aws-sdk/client-sqs": "^3.42.0"
+    }
+}
