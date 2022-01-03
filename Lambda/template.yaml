@@ -1,0 +1,66 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  AWS SAM Application
+  ### *Add Description ###
+
+Resources:
+  Queue:
+    Type: AWS::SQS::Queue
+    Properties:
+      # DelaySeconds: 10
+      MessageRetentionPeriod: 70
+  TriggerFunction: # *Add/Change Function Name
+    Type: AWS::Serverless::Function
+    Properties:
+      Architectures: 
+        - x86_64 # Add/Change Function Architecture
+      CodeUri: js/  # Add/Change Function Source Folder
+      FunctionName: TriggerFunction  # *Add/Change Function Name
+      Handler: index.handler # Add/Change Function Handler
+      MemorySize: 128 # Add/Change Function Memory
+      Role: #arn:aws:iam::{{awsid}}:role/AWSLambdaBasic # *Add/Change IAM Role ARN
+      Runtime: nodejs14.x  # Add/Change Function Runtime
+      Timeout: 15 # Add/Change Function Timeout in seconds
+      Events:
+        FunctionEvent:  # *Add/Change Function Event Source
+          Type: Schedule
+          Properties:
+            Enabled: true
+            Name: FunctionScheduleEvent # Add/Change Event Name
+            Schedule: rate(1 minute) # Add/Change Event Schedule
+      Environment:
+        Variables:
+          RATE_IN_SECONDS: 10
+          QUEUE_URL: !Ref Queue # Add/Specify Queue URL
+  Function: # *Add/Change Function Name
+    Type: AWS::Serverless::Function
+    Properties:
+      Architectures: 
+        - x86_64 # Add/Change Function Architecture
+      CodeUri: function/  # Add/Change Function Source Folder
+      FunctionName: Function  # *Add/Change Function Name
+      Handler: app.lambda_handler # Add/Change Function Handler
+      MemorySize: 128 # Add/Change Function Memory
+      Role: #arn:aws:iam::{{awsid}}:role/AWSLambdaBasic # *Add/Change IAM Role ARN
+      Runtime: python3.8  # Add/Change Function Runtime
+      Timeout: 30 # Add/Change Function Timeout in seconds
+      Events:
+        SQSFunctionEvent:  # *Add/Change Function Event Source
+          Type: SQS
+          Properties:
+            Queue: !GetAtt Queue.Arn   # *Add/Change SQS ARN
+
+Outputs:
+  TriggerFunction: # *Dependent on Resource Name Specified
+    Description: "AWS Lambda Function ARN"
+    Value: !GetAtt TriggerFunction.Arn
+  Function: # *Dependent on Resource Name Specified
+    Description: "AWS Lambda Function ARN"
+    Value: !GetAtt Function.Arn
+  Queue:  # *Dependent on Resource Name Specified
+    Description: "AWS SQS Queue ARN"
+    Value: !GetAtt Queue.Arn
+  Queue:  # *Dependent on Resource Name Specified
+    Description: "AWS SQS Queue URL"
+    Value: !Ref Queue
