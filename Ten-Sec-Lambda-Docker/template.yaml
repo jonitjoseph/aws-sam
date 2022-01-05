@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  AWS SAM Application
+  ### *Add Description ###
+
+Resources:
+  Function: # *Add/Change Function Name
+    Type: AWS::Serverless::Function
+    Properties:
+      Architectures:
+        - x86_64 # Add/Change Function Architecture
+      FunctionName: Function  # *Add/Change Function Name
+      Handler: app.lambda_handler # Add/Change Function Handler
+      ImageUri: function/  # Add/Change Function Source Folder
+      MemorySize: 128 # Add/Change Function Memory
+      PackageType: Image
+      Role: #arn:aws:iam::{{awsid}}:role/AWSLambdaBasic # *Add/Change IAM Role ARN
+      Runtime: python3.9  # Add/Change Function Runtime
+      Timeout: 30 # Add/Change Function Timeout in seconds
+      Events:
+        SQSFunctionEvent:  # *Add/Change Function Event Source
+          Type: SQS
+          Properties:
+            Queue: #arn:aws:sqs   # *Add/Change SQS ARN
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./function
+      DockerTag: v1
+
+Outputs:
+  Function: # *Dependent on Resource Name Specified
+    Description: "AWS Lambda Function ARN"
+    Value: !GetAtt Function.Arn
